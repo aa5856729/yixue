@@ -70,7 +70,6 @@ public class Page<T> {
      * @return Integer .
      */
     public Integer getTotalPage() {
-
         return totalPage;
     }
     /**
