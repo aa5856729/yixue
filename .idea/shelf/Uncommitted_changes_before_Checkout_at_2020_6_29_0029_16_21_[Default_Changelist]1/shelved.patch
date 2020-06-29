@@ -1,0 +1,86 @@
+Index: yixie-system/src/main/java/com/yixue/loxc/system/service/impl/TLoginLogServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.yixue.loxc.system.service.impl;\n\nimport com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;\n\nimport com.yixue.loxc.commons.Page;\nimport com.yixue.loxc.pojo.entity.TLoginLogEntity;\nimport com.yixue.loxc.pojo.vo.LoginLogVo;\nimport com.yixue.loxc.system.dao.TLoginLogDao;\nimport com.yixue.loxc.system.service.TLoginLogService;\nimport org.springframework.stereotype.Service;\n\nimport javax.annotation.Resource;\nimport java.util.List;\n\n\n@Service(\"tLoginLogService\")\npublic class TLoginLogServiceImpl implements TLoginLogService {\n\n    @Resource\n    TLoginLogDao tLoginLogDao;\n\n    @Override\n    public List<TLoginLogEntity> userloglist(Page<TLoginLogEntity> page, LoginLogVo logVo) {\n\n        QueryWrapper<TLoginLogEntity> queryWrapper = new QueryWrapper<TLoginLogEntity>();\n        queryWrapper.eq(\"username\",logVo.getUsername());\n        if (logVo.getBeginDate()!=null && logVo.getEndDate()!=null){  //如果有时间条件就加上  //时间范围查找\n            queryWrapper.between(\"login_time\",logVo.getBeginDate(),logVo.getEndDate());\n        }\n        if (logVo.getLoginResult()==0){ //登录失败状态为0，成功1，全部查询 -1\n            queryWrapper.eq(\"login_result\",0);\n        } else if (logVo.getLoginResult()==1){\n            queryWrapper.eq(\"login_result\",1);\n        } else {  //查询全部\n\n        }\n        List<TLoginLogEntity> tLoginLogEntities = tLoginLogDao.selectList(queryWrapper);\n        System.out.println(\"List数据:\"+tLoginLogEntities);\n        page.setListData(tLoginLogEntities);\n        return page.getListData();\n\n    }\n\n    @Override\n    public List<TLoginLogEntity> allLog() {\n        return tLoginLogDao.selectList(null);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- yixie-system/src/main/java/com/yixue/loxc/system/service/impl/TLoginLogServiceImpl.java	(revision 036e88319cf67c36059aa99f57a85dd13fac542a)
++++ yixie-system/src/main/java/com/yixue/loxc/system/service/impl/TLoginLogServiceImpl.java	(date 1593418557121)
+@@ -34,9 +34,12 @@
+         } else {  //查询全部
+ 
+         }
++
++
+         List<TLoginLogEntity> tLoginLogEntities = tLoginLogDao.selectList(queryWrapper);
+         System.out.println("List数据:"+tLoginLogEntities);
+         page.setListData(tLoginLogEntities);
++
+         return page.getListData();
+ 
+     }
+Index: yixie-system/src/main/resources/application.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>server:\n  port: 9090\n\n\nspring:\n  application:\n    name: yixie-system\n  datasource:\n    type: com.alibaba.druid.pool.DruidDataSource      #当前数据源操作类型\n    driver-class-name: com.mysql.jdbc.Driver          #mysql驱动包\n    url: jdbc:mysql://localhost:3306/yixue?serverTimezone=UTC&characterEncoding=utf-8\n    username: root\n    password: 123456\n\n  jackson:\n    date-format: yyyy-MM-dd HH-mm-ss\n    time-zone: Asia/Shanghai\nmybatis-plus:\n  mapper-locations: classpath:/mapper/**/*.xml\n  type-aliases-package: com.yixue.loxc.system.dao\n\nlogging:\n  level:\n    root: info\n\n\n\n\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- yixie-system/src/main/resources/application.yml	(revision 036e88319cf67c36059aa99f57a85dd13fac542a)
++++ yixie-system/src/main/resources/application.yml	(date 1593418557115)
+@@ -21,7 +21,7 @@
+ 
+ logging:
+   level:
+-    root: info
++    root: debug
+ 
+ 
+ 
+Index: yixie-system/src/main/java/com/yixue/loxc/system/controller/TLoginLogController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.yixue.loxc.system.controller;\n\n\n\nimport com.yixue.loxc.commons.Constants;\nimport com.yixue.loxc.commons.Page;\nimport com.yixue.loxc.pojo.Result;\nimport com.yixue.loxc.pojo.entity.TLoginLogEntity;\nimport com.yixue.loxc.pojo.vo.LoginLogVo;\nimport com.yixue.loxc.pojo.vo.PageRelust;\nimport com.yixue.loxc.system.service.TLoginLogService;\nimport org.springframework.beans.factory.annotation.Autowired;\n\nimport org.springframework.web.bind.annotation.*;\n\nimport java.text.ParseException;\nimport java.text.SimpleDateFormat;\nimport java.util.*;\n\n\n/**\n * \n *\n * @author chenshun\n * @email sunlightcs@gmail.com\n * @date 2020-06-12 10:00:41\n */\n@RestController\n@RequestMapping(\"/system/loginlog\")\n@CrossOrigin\npublic class TLoginLogController {\n    @Autowired\n    private TLoginLogService tLoginLogService;\n\n    @PostMapping(\"/query\")\n   public Result<TLoginLogEntity> querylog(@RequestParam String username, @RequestParam(value =\"beginDate\",required = false) String beginDate,\n                                           @RequestParam(value =\"endDate\",required = false) String endDate, @RequestParam(value =\"loginResult\",required = false) String loginResult,\n                                           @RequestParam(value =\"currentPage\",required = false) String currentPage) throws ParseException {\n        SimpleDateFormat dateFormat = new SimpleDateFormat(\"yyyy-MM-dd \");\n        LoginLogVo logVo=null;\n        if (beginDate!=null && endDate!=null && loginResult!=null && currentPage!=null){\n             logVo = new LoginLogVo(username,dateFormat.parse(beginDate),dateFormat.parse(endDate),Integer.parseInt(loginResult),Integer.parseInt(currentPage));\n        }else {\n             logVo = new LoginLogVo();\n             logVo.setUsername(username);\n             logVo.setLoginResult(3);\n        }\n\n        List<TLoginLogEntity> list=tLoginLogService.allLog();\n\n        int indexPage=1;\n        if (currentPage != null) {\n            indexPage=Integer.parseInt(currentPage);\n        }\n        Page<TLoginLogEntity> page=new Page<>(indexPage,list.size(),Constants.DEFAULT_PAGE_SIZE);\n//        page.setCurrentPage(indexPage); //当前页数\n//        page.setTotal(list.size());//获取总数量\n//        page.setPageSize(Constants.DEFAULT_PAGE_SIZE); //每页显示数量\n\n        List<TLoginLogEntity> list1=tLoginLogService.userloglist(page,logVo);\n\n        if (list1!=null){\n            //创建一个实体类 把分页数据和集合数据放里面\n            PageRelust pageRelust=new PageRelust();\n            pageRelust.setCurrentPage(page.getCurrentPage());\n            pageRelust.setTotalPage(page.getTotalPage());\n            pageRelust.setListData(list1);\n            return new Result(200,\"数据加载成功\",pageRelust);\n        }\n        return new Result(300,\"数据加载失败\");\n   }\n\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- yixie-system/src/main/java/com/yixue/loxc/system/controller/TLoginLogController.java	(revision 036e88319cf67c36059aa99f57a85dd13fac542a)
++++ yixie-system/src/main/java/com/yixue/loxc/system/controller/TLoginLogController.java	(date 1593418362435)
+@@ -2,6 +2,7 @@
+ 
+ 
+ 
++import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
+ import com.yixue.loxc.commons.Constants;
+ import com.yixue.loxc.commons.Page;
+ import com.yixue.loxc.pojo.Result;
+@@ -51,8 +52,9 @@
+         int indexPage=1;
+         if (currentPage != null) {
+             indexPage=Integer.parseInt(currentPage);
++            System.out.println("========="+indexPage);
+         }
+-        Page<TLoginLogEntity> page=new Page<>(indexPage,list.size(),Constants.DEFAULT_PAGE_SIZE);
++        Page<TLoginLogEntity> page=new Page<>(indexPage,Constants.DEFAULT_PAGE_SIZE,list.size());
+ //        page.setCurrentPage(indexPage); //当前页数
+ //        page.setTotal(list.size());//获取总数量
+ //        page.setPageSize(Constants.DEFAULT_PAGE_SIZE); //每页显示数量
+Index: yixue-commons/src/main/java/com/yixue/loxc/commons/Page.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\npackage com.yixue.loxc.commons;\n\nimport java.util.List;\n\n/**\n * <p>分页处理类 .</p>\n *\n * @version v1.0\n * @author XX\n * @date Sep 21, 2011\n *\n */\npublic class Page<T> {\n    /**\n     * 当前页面\n     */\n    private Integer currentPage;\n    /**\n     * 总记录数 .\n     */\n    private Integer total;\n    /**\n     * 每页行数 .\n     */\n    private Integer pageSize;\n    /**\n     * 页面的总数  .\n     */\n    private Integer totalPage;\n    /**\n     * 结果集中数据的起始位置  .\n     */\n    private Integer beginPos;\n    /**\n     * List 集合.\n     */\n    private List<T> listData;\n\n    public Page() {\n\n    }\n    /**\n     * 当前页面 .\n     * 页面的大小 .\n     * @param curpage .\n     * @param pagesize .\n     */\n    public Page(int curpage, Integer pagesize) {\n        this.currentPage = curpage;\n        this.pageSize = pagesize;\n    }\n    /**\n     * @param curpage .\n     * @param total\n     * @param pagesize .\n     */\n    public Page(int curpage,Integer pagesize,Integer total) {\n        super();\n        this.currentPage = curpage;//当前页码\n        this.total = total;//总记录数\n        this.pageSize = pagesize;//页码容量\n        //总页数=总记录数total/pageSize（+1）\n        this.totalPage = (total + this.pageSize - 1) /this.pageSize;\n        //下标起始位置：(curPage-1)*pageSize\n        this.beginPos = (currentPage-1)*pageSize;\n    }\n    /**\n     * 总页面数 .\n     * @return Integer .\n     */\n    public Integer getTotalPage() {\n        return totalPage;\n    }\n    /**\n     *  得到页面的当前位置 .\n     * @return Integer .\n     */\n    public Integer getBeginPos() {\n        return beginPos;\n    }\n    /**\n     * @param currentPage\n     *            the curPage to set\n     */\n    public void setCurrentPage(int currentPage) {\n        this.currentPage = currentPage;\n    }\n\n    public List<T> getListData() {\n        return listData;\n    }\n\n    public void setListData(List<T> listData) {\n        this.listData = listData;\n    }\n    /**\n     * @param pageSize\n     *            the pageSize to set\n     */\n    public void setPageSize(Integer pageSize) {\n        this.pageSize = pageSize;\n    }\n\n    /**\n     * @param rowCount\n     *            the rowCount to set\n     */\n    public void setRowCount(Integer rowCount) {\n        this.total = rowCount;\n    }\n\n    /**\n     * @param beginPos\n     *            the beginPos to set\n     */\n    public void setBeginPos(Integer beginPos) {\n        this.beginPos = beginPos;\n    }\n    public Integer getTotal() {\n        return total;\n    }\n\n    public void setTotal(Integer total) {\n        this.total = total;\n    }\n\n    public void setTotalPage(Integer totalPage) {\n\n        this.totalPage = totalPage;\n    }\n\n    public Integer getCurrentPage() {\n        return currentPage;\n    }\n\n    public void setCurrentPage(Integer currentPage) {\n        this.currentPage = currentPage;\n    }\n\n    public Integer getPageSize() {\n        return pageSize;\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- yixue-commons/src/main/java/com/yixue/loxc/commons/Page.java	(revision 036e88319cf67c36059aa99f57a85dd13fac542a)
++++ yixue-commons/src/main/java/com/yixue/loxc/commons/Page.java	(date 1593415433050)
+@@ -61,7 +61,7 @@
+         this.total = total;//总记录数
+         this.pageSize = pagesize;//页码容量
+         //总页数=总记录数total/pageSize（+1）
+-        this.totalPage = (total + this.pageSize - 1) /this.pageSize;
++        this.totalPage = total%this.pageSize==0?total/this.pageSize:total/this.pageSize+1;
+         //下标起始位置：(curPage-1)*pageSize
+         this.beginPos = (currentPage-1)*pageSize;
+     }
