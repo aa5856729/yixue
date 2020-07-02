@@ -1,6 +1,6 @@
 package com.yixue.loxc.user.controller;
 
-import com.yixue.loxc.commons.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yixue.loxc.pojo.Result;
 import com.yixue.loxc.pojo.entity.TRechargeEntity;
 import com.yixue.loxc.pojo.vo.LiuShuiVo;
@@ -33,9 +33,9 @@ public class RechargeController {
             liuShuiVo.setCurrentPage(Integer.parseInt(currentPage));
         }
 
-         Page<TRechargeEntity> rechargeEntityList=tRechargeService.selectRecharge(liuShuiVo);
-         if (rechargeEntityList !=null){
-             return new Result(200,"数据加载成功",rechargeEntityList);
+         IPage<TRechargeEntity> iPage=tRechargeService.selectRecharge(liuShuiVo);
+         if (iPage.getRecords()!=null){
+             return new Result(200,"数据加载成功",iPage.getRecords());
          }
         return new Result(200,"数据加载失败");
     }

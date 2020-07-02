@@ -2,6 +2,8 @@ package com.yixue.loxc.system.dao;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.yixue.loxc.commons.Page;
 import com.yixue.loxc.pojo.entity.TLoginLogEntity;
 import org.apache.ibatis.annotations.Mapper;
 

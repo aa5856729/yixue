@@ -2,8 +2,9 @@ package com.yixue.loxc.system.controller;
 
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yixue.loxc.commons.Constants;
-import com.yixue.loxc.commons.Page;
 import com.yixue.loxc.pojo.Result;
 import com.yixue.loxc.pojo.entity.TLoginLogEntity;
 import com.yixue.loxc.pojo.vo.LoginLogVo;
@@ -46,25 +47,19 @@ public class TLoginLogController {
              logVo.setLoginResult(3);
         }
 
-        List<TLoginLogEntity> list=tLoginLogService.allLog();
+        //List<TLoginLogEntity> list=tLoginLogService.allLog();
 
         int indexPage=1;
         if (currentPage != null) {
             indexPage=Integer.parseInt(currentPage);
         }
-        Page<TLoginLogEntity> page=new Page<>(indexPage,list.size(),Constants.DEFAULT_PAGE_SIZE);
-//        page.setCurrentPage(indexPage); //当前页数
-//        page.setTotal(list.size());//获取总数量
-//        page.setPageSize(Constants.DEFAULT_PAGE_SIZE); //每页显示数量
-
-        List<TLoginLogEntity> list1=tLoginLogService.userloglist(page,logVo);
-
-        if (list1!=null){
+        IPage<TLoginLogEntity> page =tLoginLogService.userloglist(indexPage,logVo);
+        if (page!=null){
             //创建一个实体类 把分页数据和集合数据放里面
             PageRelust pageRelust=new PageRelust();
-            pageRelust.setCurrentPage(page.getCurrentPage());
-            pageRelust.setTotalPage(page.getTotalPage());
-            pageRelust.setListData(list1);
+            pageRelust.setCurrentPage((int)page.getCurrent());
+            pageRelust.setTotalPage((int)page.getPages());  //总页数
+            pageRelust.setListData(page.getRecords());
             return new Result(200,"数据加载成功",pageRelust);
         }
         return new Result(300,"数据加载失败");

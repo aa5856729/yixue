@@ -125,4 +125,16 @@ public class TRechargeController {
             return new Result(300,"充值失败!");
         }
     }
+
+    /**
+     * 查询所有充值记录
+     * @return
+     */
+    public Result<TRechargeEntity> getRechargeAll(String id){
+       List<TRechargeEntity> list=tRechargeService.getAll(id);
+       if (list!=null){
+           return new Result(200,"加载成功",list);
+       }
+        return new Result(300,"加载失败");
+    }
 }

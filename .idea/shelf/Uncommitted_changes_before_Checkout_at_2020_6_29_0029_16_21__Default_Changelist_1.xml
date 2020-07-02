@@ -1,0 +1,14 @@
+<changelist name="Uncommitted_changes_before_Checkout_at_2020_6_29_0029_16_21_[Default_Changelist]1" date="1593418869234" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2020_6_29_0029_16_21_[Default_Changelist]1/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 2020/6/29 0029 16:21 [Default Changelist]" />
+  <binary>
+    <option name="BEFORE_PATH" value="yixie-system/target/classes/com/yixue/loxc/system/controller/TLoginLogController.class" />
+    <option name="AFTER_PATH" value="yixie-system/target/classes/com/yixue/loxc/system/controller/TLoginLogController.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2020_6_29_0029_16_21_[Default_Changelist]1/TLoginLogController.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="yixie-system/target/classes/com/yixue/loxc/system/service/impl/TLoginLogServiceImpl.class" />
+    <option name="AFTER_PATH" value="yixie-system/target/classes/com/yixue/loxc/system/service/impl/TLoginLogServiceImpl.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2020_6_29_0029_16_21_[Default_Changelist]1/TLoginLogServiceImpl.class" />
+  </binary>
+</changelist>

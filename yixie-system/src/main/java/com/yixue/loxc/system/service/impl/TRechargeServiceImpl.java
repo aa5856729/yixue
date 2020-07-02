@@ -50,4 +50,9 @@ public class TRechargeServiceImpl implements TRechargeService {
 
 
     }
+
+    @Override
+    public List<TRechargeEntity> getAll(String id) {
+        return tRechargeDao.selectList(new QueryWrapper<TRechargeEntity>().eq("user_id",id));
+    }
 }
